@@ -249,7 +249,7 @@ while ($shipclass = $res->fetch_assoc()) {
         $result->free();
     ?>
     <br />
-    <a href="new-ship.php" class="btn btn-success btn-lg active" >Register a New CMDR</a>
+    <a href="new-ship.php" class="btn btn-success btn-lg active" >Register a New Ship</a>
   </article>
   <div class="clearfix"></div>
   </section>
