@@ -26,7 +26,7 @@ while ($shipclass = $res->fetch_assoc()) {
 <meta content="Wolfii Namakura" name="author">
 <meta content="hull seals, elite dangerous, distant worlds, seal team fix, mechanics, dw2" name="keywords">
 <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0" name="viewport">
-<meta content="About The Long Arf" name="description">
+<meta content="About Hull Seals Ship Registration Portal" name="description">
 <title>My Fleet | The Hull Seals</title>
 <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
