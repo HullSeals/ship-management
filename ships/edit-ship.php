@@ -20,7 +20,6 @@ $stmt = $mysqli->prepare("SELECT * FROM ships WHERE seal_ID = ? AND ship_name = 
   $_SESSION['2ndrun'] = true;
 $chickennugget = $result->fetch_assoc();
 $fluffernutter = $chickennugget['ship_name'];
-$wendys = $chickennugget['ship'];
 $salsa = $chickennugget['ID'];
 $stmt->close();
 $shipList = [];
@@ -150,12 +149,12 @@ if (isset($_GET['send'])) {
                   <div class="input-group-prepend">
                       <span class="input-group-text">Edited Name:</span>
                   </div>
-                  <input type="text" name="edt_alias" value="<?php echo $fluffernutter; ?>" class="form-control" placeholder="Edited Alias Name" aria-label="Edited Alias Name" pattern="[a-zA-Z0-9-_.`|\[\]\{\}]{1,45}" required>
+                  <input type="text" name="edt_alias" value="<?php echo $fluffernutter; ?>" class="form-control" placeholder="Edited Alias Name" aria-label="Edited Alias Name" required>
                   <input type="hidden" name="numberedt" value="<?php echo $salsa; ?>" required>
                   </div>
                   <div class="input-group mb-3">
                                             <div class="input-group-prepend">
-                                                <span class="input-group-text">ship</span>
+                                                <span class="input-group-text">Ship Class:</span>
                                             </div>
                                             <select name="ship" class="custom-select" id="inputGroupSelect01" placeholder="Test" required>
                                               <option selected disabled>Choose...</option>

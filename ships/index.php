@@ -9,7 +9,13 @@ $counter = 0;
 if (isset($_SESSION['2ndrun'])) {
   unset($_SESSION['2ndrun']);
 }
-
+$db = include '../db.php';
+$mysqli = new mysqli($db['server'], $db['user'], $db['pass'], $db['db'], $db['port']);
+$shipList = [];
+$res = $mysqli->query('SELECT * FROM lookups.ships_lu ORDER BY ship_id');
+while ($shipclass = $res->fetch_assoc()) {
+    $shipList[$shipclass['ship_id']] = $shipclass['ship_name'];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -136,12 +142,12 @@ if (isset($_SESSION['2ndrun'])) {
     </footer></body>
     </html>
 ');
-    echo "<h3>Returning all Registered CMDR Aliases for: ";
+    echo "<h3>Returning all Registered Ships for: ";
     echo echousername($user->data()->id);
     echo nl2br ("</h3>");
     echo '<table class="table table-dark table-striped table-bordered table-hover table-responsive-md">
           <tr>
-              <td>Roster/Registry Number</td>
+              <td>Registry Number</td>
               <td>Ship Name Name</td>
               <td>Class</td>
               <td colspan="2">Options</td>
@@ -151,9 +157,89 @@ if (isset($_SESSION['2ndrun'])) {
             $field2name = $row["ship_name"];
             $field3name = $row["class"];
             echo '<tr>
-                      <td>'.$field1name.'</td>
+                      <td>HS'.$field1name.'</td>
                       <td>'.$field2name.'</td>
-                      <td>'.$field3name.'</td>
+                      <td>';
+                      //There has got to be a better way to do this, but I'm lazy and it just works.
+                      //TODO. Fix this shit. ~ Rix
+                      if ($field3name == "1") {
+                        echo "Adder";
+                      } elseif ($field3name=="2") {
+                        echo "Alliance Challenger";
+                      } elseif ($field3name=="3") {
+                        echo "Alliance Chieftain";
+                      }elseif ($field3name=="4") {
+                        echo "Alliance Crusader";
+                      }elseif ($field3name=="5") {
+                        echo "Anaconda";
+                      }elseif ($field3name=="6") {
+                        echo "Asp Explorer";
+                      }elseif ($field3name=="7") {
+                        echo "Asp Scout";
+                      }elseif ($field3name=="8") {
+                        echo "Beluga Liner";
+                      }elseif ($field3name=="9") {
+                        echo "Cobra Mk III";
+                      }elseif ($field3name=="10") {
+                        echo "Cobra Mk IV";
+                      }elseif ($field3name=="11") {
+                        echo "Diamondback Explorer";
+                      }elseif ($field3name=="12") {
+                        echo "Diamondback Scout";
+                      }elseif ($field3name=="13") {
+                        echo "Dolphin";
+                      }elseif ($field3name=="14") {
+                        echo "Eagle";
+                      }elseif ($field3name=="15") {
+                        echo "Federal Assault Ship";
+                      }elseif ($field3name=="16") {
+                        echo "Federal Corvette";
+                      }elseif ($field3name=="17") {
+                        echo "Federal Dropship";
+                      }elseif ($field3name=="18") {
+                        echo "Federal Gunship";
+                      }elseif ($field3name=="19") {
+                        echo "Fer-de-Lance";
+                      }elseif ($field3name=="20") {
+                        echo "Hauler";
+                      }elseif ($field3name=="21") {
+                        echo "Imperial Clipper";
+                      }elseif ($field3name=="22") {
+                        echo "Imperial Courier";
+                      }elseif ($field3name=="23") {
+                        echo "Imperial Cutter";
+                      }elseif ($field3name=="24") {
+                        echo "Imperial Eagle";
+                      }elseif ($field3name=="25") {
+                        echo "Keelback";
+                      }elseif ($field3name=="26") {
+                        echo "Krait Mk II";
+                      }elseif ($field3name=="27") {
+                        echo "Krait Phantom";
+                      }elseif ($field3name=="28") {
+                        echo "Mamba";
+                      }elseif ($field3name=="29") {
+                        echo "Orca";
+                      }elseif ($field3name=="30") {
+                        echo "Python";
+                      }elseif ($field3name=="31") {
+                        echo "Sidewinder";
+                      }elseif ($field3name=="32") {
+                        echo "Type-10 Defender";
+                      }elseif ($field3name=="33") {
+                        echo "Type-6 Transporter";
+                      }elseif ($field3name=="34") {
+                        echo "Type-7 Transporter";
+                      }elseif ($field3name=="35") {
+                        echo "Type-9 Heavy";
+                      }elseif ($field3name=="36") {
+                        echo "Viper";
+                      }elseif ($field3name=="37") {
+                        echo "Viper Mk IV";
+                      }elseif ($field3name=="38") {
+                        echo "Vulture";
+                      }
+                      echo '</td>
                       <td><a href="edit-ship.php?cne='.$field2name.'" class="btn btn-warning active">Edit</a></td>
                       <td><a href="rem-ship.php?cne='.$field2name.'" class="btn btn-danger active">Delete</a></td>
                   </tr>';
@@ -161,9 +247,6 @@ if (isset($_SESSION['2ndrun'])) {
         }
         echo '</table>';
         $result->free();
-        echo "Number of Aliases: ";
-        echo $counter;
-        echo nl2br ("/15\n");
     ?>
     <br />
     <a href="new-ship.php" class="btn btn-success btn-lg active" >Register a New CMDR</a>
