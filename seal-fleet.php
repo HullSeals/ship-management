@@ -36,7 +36,7 @@ while ($shipclass = $res->fetch_assoc()) {
     mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
     $db = include 'db.php';
     $mysqli = new mysqli($db['server'], $db['user'], $db['pass'], $db['db'], $db['port']);
-    $stmt = $mysqli->prepare("SELECT ID, seal_ID, ship_name, class FROM ships");
+    $stmt = $mysqli->prepare("SELECT ID, seal_ID, ship_name, class FROM ships WHERE del_flag <> 1");
     $stmt->execute();
     $result = $stmt->get_result();
     echo "<h3>Returning all Registered Ships: ";

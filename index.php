@@ -6,13 +6,6 @@ error_reporting(E_ALL);
 //UserSpice Required
 require_once '../users/init.php';  //make sure this path is correct!
 if (!securePage($_SERVER['PHP_SELF'])){die();}
-
-
-$counter = 0;
-if (isset($_SESSION['2ndrun'])) {
-  unset($_SESSION['2ndrun']);
-}
-
 ?>
 <!DOCTYPE html>
 <html lang="en">

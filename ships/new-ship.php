@@ -6,6 +6,9 @@ error_reporting(E_ALL);
 require_once '../../users/init.php';  //make sure this path is correct!
 if (!securePage($_SERVER['PHP_SELF'])){die();}
 
+//IP Tracking Stuff
+require '../../assets/includes/ipinfo.php';
+
 $db = include '../db.php';
 $mysqli = new mysqli($db['server'], $db['user'], $db['pass'], $db['db'], $db['port']);
 $shipList = [];
@@ -15,7 +18,7 @@ while ($shipclass = $res->fetch_assoc()) {
 }
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 $mysqli = new mysqli($db['server'], $db['user'], $db['pass'], $db['db'], $db['port']);
-$stmt = $mysqli->prepare("SELECT seal_ID FROM ships WHERE seal_ID =?");
+$stmt = $mysqli->prepare("SELECT seal_ID FROM ships WHERE seal_ID =? AND del_flag <> 1");
 $stmt->bind_param("i", $user->data()->id);
 $stmt->execute();
 $numAlias = $stmt->get_result();
@@ -30,8 +33,8 @@ if (isset($_GET['send'])) {
         $validationErrors[] = 'invalid ship';
     }
     if (!count($validationErrors)) {
-      $stmt = $mysqli->prepare('CALL spCreateShipCleaner(?,?,?)');
-      $stmt->bind_param('sii', $lore['new_ship'], $lore['ship'], $user->data()->id);
+      $stmt = $mysqli->prepare('CALL spCreateShipCleaner(?,?,?,?)');
+      $stmt->bind_param('siis', $lore['new_ship'], $lore['ship'], $user->data()->id, $lgd_ip);
       $stmt->execute();
       foreach ($stmt->error_list as $error) {
           $validationErrors[] = 'DB: ' . $error['error'];

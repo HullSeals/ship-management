@@ -7,11 +7,14 @@ error_reporting(E_ALL);
 require_once '../../users/init.php';  //make sure this path is correct!
 if (!securePage($_SERVER['PHP_SELF'])){die();}
 
+//IP Tracking Stuff
+require '../../assets/includes/ipinfo.php';
+
 //
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 $db = include '../db.php';
 $mysqli = new mysqli($db['server'], $db['user'], $db['pass'], $db['db'], $db['port']);
-$stmt = $mysqli->prepare("SELECT * FROM ships WHERE seal_ID = ? AND ship_name = ?");
+$stmt = $mysqli->prepare("SELECT * FROM ships WHERE seal_ID = ? AND ship_name = ? AND del_flag <> 1");
     $stmt->bind_param("is", $user->data()->id, $_GET['cne']);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -25,7 +28,6 @@ $chickennugget = $result->fetch_assoc();
 $fluffernutter = $chickennugget['ship_name'];
 $salsa = $chickennugget['ID'];
 $stmt->close();
-$shipList = [];
 $shipList = [];
 $res = $mysqli->query('SELECT * FROM lookups.ships_lu ORDER BY ship_id');
 while ($shipclass = $res->fetch_assoc()) {
@@ -41,8 +43,8 @@ if (isset($_GET['send'])) {
         $validationErrors[] = 'invalid ship';
     }
     if (!count($validationErrors)) {
-      $stmt = $mysqli->prepare('CALL spEditShipCleaner(?,?,?)');
-      $stmt->bind_param('sii', $lore['edt_alias'], $lore['ship'], $lore['numberedt']);
+      $stmt = $mysqli->prepare('CALL spEditShipCleaner(?,?,?,?)');
+      $stmt->bind_param('siis', $lore['edt_alias'], $lore['ship'], $lore['numberedt'], $lgd_ip);
       $stmt->execute();
       foreach ($stmt->error_list as $error) {
           $validationErrors[] = 'DB: ' . $error['error'];

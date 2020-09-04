@@ -7,6 +7,8 @@ error_reporting(E_ALL);
 require_once '../../users/init.php';  //make sure this path is correct!
 if (!securePage($_SERVER['PHP_SELF'])){die();}
 
+//IP Tracking Stuff
+require '../../assets/includes/ipinfo.php';
 
 //
 $counter = 0;
@@ -20,6 +22,25 @@ $res = $mysqli->query('SELECT * FROM lookups.ships_lu ORDER BY ship_id');
 while ($shipclass = $res->fetch_assoc()) {
     $shipList[$shipclass['ship_id']] = $shipclass['ship_name'];
 }
+$validationErrors = [];
+$lore = [];
+if (isset($_GET['send'])) {
+    foreach ($_REQUEST as $key => $value) {
+        $lore[$key] = strip_tags(stripslashes(str_replace(["'", '"'], '', $value)));
+    }
+    if (!count($validationErrors)) {
+        $stmt = $mysqli->prepare('CALL spRemShip(?,?)');
+        $stmt->bind_param('is',$lore['numberedt'], $lgd_ip);
+        $stmt->execute();
+        foreach ($stmt->error_list as $error) {
+            $validationErrors[] = 'DB: ' . $error['error'];
+        }
+        $stmt->close();
+        unset($_SESSION['2ndrun']);
+        header("Location: .");
+  }
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -44,7 +65,7 @@ while ($shipclass = $res->fetch_assoc()) {
     mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
     $db = include '../db.php';
     $mysqli = new mysqli($db['server'], $db['user'], $db['pass'], $db['db'], $db['port']);
-    $stmt = $mysqli->prepare("SELECT ID, seal_ID, ship_name, class FROM ships WHERE seal_ID =?");
+    $stmt = $mysqli->prepare("SELECT ID, seal_ID, ship_name, class FROM ships WHERE seal_ID =? AND del_flag <> 1");
     $stmt->bind_param("i", $user->data()->id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -108,8 +129,30 @@ while ($shipclass = $res->fetch_assoc()) {
                       echo $result3['ship_name'];
                       echo '</td>
                       <td><a href="edit-ship.php?cne='.$field2name.'" class="btn btn-warning active">Edit</a></td>
-                      <td><a href="rem-ship.php?cne='.$field2name.'" class="btn btn-danger active">Delete</a></td>
+                      <td><button type="button" class="btn btn-danger active" data-toggle="modal" data-target="#mo'.$field1name.'">Delete</button>
+                      </td>
                   </tr>';
+                  echo '<div class="modal fade" id="mo'.$field1name.'" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel" style="color:black;">Delete Ship?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" style="color:black;">
+        Are you sure you want to delete the Ship "'.$field2name.'"?
+      </div>
+      <div class="modal-footer">
+        <form action="?send" method="post">
+            <input type="hidden" name="numberedt" value="'.$field1name.'" required>
+          <button type="submit" class="btn btn-danger">Yes, Remove.</button><button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </form>
+      </div>
+    </div>
+  </div>
+</div>';
               $counter++;
         }
         echo '</table>';
