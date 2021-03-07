@@ -24,7 +24,7 @@ while ($shipclass = $res->fetch_assoc()) {
 }
 $validationErrors = [];
 $lore = [];
-if (isset($_GET['send'])) {
+if (isset($_GET['delete'])) {
     foreach ($_REQUEST as $key => $value) {
         $lore[$key] = strip_tags(stripslashes(str_replace(["'", '"'], '', $value)));
     }
@@ -39,6 +39,42 @@ if (isset($_GET['send'])) {
         unset($_SESSION['2ndrun']);
         header("Location: .");
   }
+}
+if (isset($_GET['new'])) {
+    foreach ($_REQUEST as $key => $value) {
+        $lore[$key] = strip_tags(stripslashes(str_replace(["'", '"'], '', $value)));
+    }
+    if (!isset($shipList[$lore['ship']])) {
+        $validationErrors[] = 'invalid ship';
+    }
+    if (!count($validationErrors)) {
+      $stmt = $mysqli->prepare('CALL spCreateShipCleaner(?,?,?,?)');
+      $stmt->bind_param('siis', $lore['new_ship'], $lore['ship'], $user->data()->id, $lgd_ip);
+      $stmt->execute();
+      foreach ($stmt->error_list as $error) {
+          $validationErrors[] = 'DB: ' . $error['error'];
+      }
+      $stmt->close();
+  header("Location: .");
+    }
+}
+if (isset($_GET['edit'])) {
+    foreach ($_REQUEST as $key => $value) {
+        $lore[$key] = strip_tags(stripslashes(str_replace(["'", '"'], '', $value)));
+    }
+    if (!isset($shipList[$lore['ship']])) {
+        $validationErrors[] = 'invalid ship';
+    }
+    if (!count($validationErrors)) {
+      $stmt = $mysqli->prepare('CALL spEditShipCleaner(?,?,?,?)');
+      $stmt->bind_param('siis', $lore['edt_alias'], $lore['ship'], $lore['numberedt'], $lgd_ip);
+      $stmt->execute();
+      foreach ($stmt->error_list as $error) {
+          $validationErrors[] = 'DB: ' . $error['error'];
+      }
+      $stmt->close();
+      header("Location: .");
+    }
 }
 
 ?>
@@ -145,7 +181,7 @@ if (isset($_GET['send'])) {
         Are you sure you want to delete the Ship "'.$field2name.'"?
       </div>
       <div class="modal-footer">
-        <form action="?send" method="post">
+        <form action="?delete" method="post">
             <input type="hidden" name="numberedt" value="'.$field1name.'" required>
           <button type="submit" class="btn btn-danger">Yes, Remove.</button><button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           </form>
@@ -153,13 +189,85 @@ if (isset($_GET['send'])) {
     </div>
   </div>
 </div>';
+echo '<div class="modal fade" id="moE'.$field1name.'" tabindex="-1" aria-hidden="true">
+				  <div class="modal-dialog modal-dialog-centered">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <h5 class="modal-title" id="exampleModalLabel" style="color:black;">Edit Ship<h5>
+				        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				          <span aria-hidden="true">&times;</span>
+				        </button>
+				      </div>
+				      <div class="modal-body" style="color:black;">
+				      <form action="?edit" method="post">
+				        <div class="input-group mb-3">
+				                  <div class="input-group-prepend">
+				                      <span class="input-group-text">Edited Name:</span>
+				                  </div>
+				                  <input type="text" name="edt_alias" value="';
+				                   echo $field2name;
+				                   echo '" class="form-control" placeholder="Edited Ship Name" aria-label="Edited Ship Name" required>
+				      </div>
+              <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">Ship Class:</span>
+                                        </div>
+                                        <select name="ship" class="custom-select" id="inputGroupSelect01" placeholder="Test" required>
+                                          <option selected disabled>Choose...</option>';
+                                            foreach ($shipList as $shipId => $shipName) {
+                                                echo '<option value="' . $shipId . '"' . ($burgerking['ship'] == $shipId ? ' checked' : '') . '>' . $shipName . '</option>';
+                                            }
+                                        echo '</select>
+</div>
+				      <div class="modal-footer">
+				            <input type="hidden" name="numberedt" value="'.$field3name.'" required>
+				          <button type="submit" class="btn btn-primary">Submit</button><button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				          </form>
+				      </div>
+				    </div>
+				  </div>
+				</div>';
+
               $counter++;
         }
         echo '</table>';
         $result->free();
     ?>
     <br />
-    <a href="new-ship.php" class="btn btn-success btn-lg active" >Register a New Ship</a>
+    <button class="btn btn-success btn-lg active" data-target="#moNew" data-toggle="modal" type="button">Register a New Ship</button>
+    <div aria-hidden="true" class="modal fade" id="moNew" tabindex="-1">
+					<div class="modal-dialog modal-dialog-centered">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="exampleModalLabel" style="color:black;">New Ship</h5><button aria-label="Close" class="close" data-dismiss="modal" type="button"><span aria-hidden="true">&times;</span></button>
+							</div>
+							<div class="modal-body" style="color:black;">
+								<form action="?new" method="post">
+									<div class="input-group mb-3">
+										<input type="text" name="new_ship" value="<?= $lore['new_ship'] ?? '' ?>" class="form-control" placeholder="New Ship Name" aria-label="New Ship Name" required>
+									</div>
+                  <div class="input-group mb-3">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">Ship Class</span>
+                                            </div>
+                                            <select name="ship" class="custom-select" id="inputGroupSelect01" placeholder="Test" required>
+                                              <option selected disabled>Choose...</option>
+                                                <?php
+                                                foreach ($shipList as $shipId => $shipName) {
+                                                    echo '<option value="' . $shipId . '"' . ($shipclass['ship'] == $shipId ? ' checked' : '') . '>' . $shipName . '</option>';
+                                                }
+                                                ?>
+                                            </select>
+</div>
+									<div class="modal-footer">
+										<button class="btn btn-primary" type="submit">Submit</button><button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+
   </article>
   <div class="clearfix"></div>
 </section>
