@@ -183,7 +183,10 @@ echo '<div class="modal fade" id="moE'.$field1name.'" tabindex="-1" aria-hidden=
 		<select name="ship" class="custom-select" id="inputGroupSelect01" placeholder="Test" required>
 			<option selected disabled>Choose...</option>';
 			foreach ($shipList as $shipId => $shipName) {
-				echo '<option value="' . $shipId . '"' . ($burgerking['ship'] == $shipId ? ' checked' : '') . '>' . $shipName . '</option>';
+        if (!is_array($shipclass['ship'] ?? false)) continue;
+        else {
+          echo '<option value="' . $shipId . '"' . ($shipclass['ship'] == $shipId ? ' checked' : '') . '>' . $shipName . '</option>';
+        }
 			}
 		echo '</select>
       </div>
@@ -221,9 +224,12 @@ echo '<div class="modal fade" id="moE'.$field1name.'" tabindex="-1" aria-hidden=
                                             <select name="ship" class="custom-select" id="inputGroupSelect01" placeholder="Test" required>
                                               <option selected disabled>Choose...</option>
                                                 <?php
-                                                foreach ($shipList as $shipId => $shipName) {
-                                                    echo '<option value="' . $shipId . '"' . ($shipclass['ship'] == $shipId ? ' checked' : '') . '>' . $shipName . '</option>';
-                                                }
+			foreach ($shipList as $shipId => $shipName) {
+        if (!is_array($shipclass['ship'] ?? false)) continue;
+        else {
+          echo '<option value="' . $shipId . '"' . ($shipclass['ship'] == $shipId ? ' checked' : '') . '>' . $shipName . '</option>';
+        }
+			}
                                                 ?>
                                             </select>
 </div>
