@@ -36,23 +36,27 @@ while ($shipclass = $res->fetch_assoc()) {
     mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
     $db = include 'db.php';
     $mysqli = new mysqli($db['server'], $db['user'], $db['pass'], $db['db'], $db['port']);
-    $stmt = $mysqli->prepare("SELECT ID, seal_ID, ship_name, class FROM ships WHERE del_flag <> 1");
+    $stmt = $mysqli->prepare("SELECT ID, seal_ID, ship_name, class, link FROM ships WHERE del_flag <> 1");
     $stmt->execute();
     $result = $stmt->get_result();
     echo "<h3>Returning all Registered Ships: ";
     echo nl2br ("</h3>");
     echo '<table class="table table-dark table-striped table-bordered table-hover table-responsive-md">
+          <thead>
           <tr>
               <td>Registry Number</td>
               <td>Ship Name Name</td>
               <td>Class</td>
              <td>Owner</td>
-          </tr>';
+             <td>Build Link</td>
+          </tr>
+          </thead>';
         while ($row = $result->fetch_assoc()) {
             $field1name = $row["ID"];
             $field2name = $row["ship_name"];
             $field3name = $row["class"];
             $field4name = $row["seal_ID"];
+            $field5name = $row["link"];
             echo '<tr>
                       <td>HS'.$field1name.'</td>
                       <td>'.$field2name.'</td>
@@ -74,11 +78,12 @@ while ($shipclass = $res->fetch_assoc()) {
                         $result2 = mysqli_fetch_assoc($result2);
                         $stmt2->close();
                         if (!isset($result2)) {
-                          echo 'CMDR Not Set</td></tr>';
+                          echo 'CMDR Not Set</td>';
 			}
 			else {
-                          echo $result2['seal_name'];'</td></tr>';
+                          echo $result2['seal_name'];'</td>';
 			}
+      echo '<td>'.$field5name.'</td></tr>';
         }
         echo '</table>';
         $result->free();

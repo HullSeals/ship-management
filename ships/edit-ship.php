@@ -26,6 +26,7 @@ $stmt = $mysqli->prepare("SELECT * FROM ships WHERE seal_ID = ? AND ship_name = 
   $_SESSION['2ndrun'] = true;
 $chickennugget = $result->fetch_assoc();
 $fluffernutter = $chickennugget['ship_name'];
+$blizzard = $chickennugget['link'];
 $salsa = $chickennugget['ID'];
 $stmt->close();
 $shipList = [];
@@ -43,8 +44,8 @@ if (isset($_GET['send'])) {
         $validationErrors[] = 'invalid ship';
     }
     if (!count($validationErrors)) {
-      $stmt = $mysqli->prepare('CALL spEditShipCleaner(?,?,?,?)');
-      $stmt->bind_param('siis', $lore['edt_alias'], $lore['ship'], $lore['numberedt'], $lgd_ip);
+      $stmt = $mysqli->prepare('CALL spEditShipCleaner(?,?,?,?,?)');
+      $stmt->bind_param('sisis', $lore['edt_alias'], $lore['ship'], $lore['link'], $lore['numberedt'], $lgd_ip);
       $stmt->execute();
       foreach ($stmt->error_list as $error) {
           $validationErrors[] = 'DB: ' . $error['error'];
@@ -94,7 +95,6 @@ if (isset($_GET['send'])) {
                                                 <span class="input-group-text">Ship Class:</span>
                                             </div>
                                             <select name="ship" class="custom-select" id="inputGroupSelect01" placeholder="Test" required>
-                                              <option selected disabled>Choose...</option>
                                                 <?php
                                                 foreach ($shipList as $shipId => $shipName) {
                                                     echo '<option value="' . $shipId . '"' . ($burgerking['ship'] == $shipId ? ' checked' : '') . '>' . $shipName . '</option>';
@@ -102,6 +102,13 @@ if (isset($_GET['send'])) {
                                                 ?>
                                             </select>
 </div>
+<div class="input-group mb-3">
+  <input type="url" name="link" id="link" class="form-control" value="<?php echo $blizzard; ?>"
+  placeholder="Coriolis Shortlink (Optional) https://s.orbis.zone/"
+  pattern="(https?:\/\/(.+?\.)?orbis\.zone(\/[A-Za-z0-9\-\._~:\/\?#\[\]@!$&'\(\)\*\+,;\=]*)?)" size="30"
+  required>
+</div>
+
                   <button type="submit" class="btn btn-primary">Submit</button> <a href="." class="btn btn-warning">Go Back</a>
                   </form>
                 </article>
@@ -111,4 +118,3 @@ if (isset($_GET['send'])) {
           <?php include '../../assets/includes/footer.php'; ?>
       </body>
       </html>
-

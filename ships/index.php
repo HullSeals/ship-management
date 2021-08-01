@@ -48,8 +48,8 @@ if (isset($_GET['new'])) {
         $validationErrors[] = 'invalid ship';
     }
     if (!count($validationErrors)) {
-      $stmt = $mysqli->prepare('CALL spCreateShipCleaner(?,?,?,?)');
-      $stmt->bind_param('siis', $lore['new_ship'], $lore['ship'], $user->data()->id, $lgd_ip);
+      $stmt = $mysqli->prepare('CALL spCreateShipCleaner(?,?,?,?,?)');
+      $stmt->bind_param('sisis', $lore['new_ship'], $lore['ship'], $lore['link'], $user->data()->id, $lgd_ip);
       $stmt->execute();
       foreach ($stmt->error_list as $error) {
           $validationErrors[] = 'DB: ' . $error['error'];
@@ -102,7 +102,7 @@ if (isset($_GET['edit'])) {
     mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
     $db = include '../db.php';
     $mysqli = new mysqli($db['server'], $db['user'], $db['pass'], $db['db'], $db['port']);
-    $stmt = $mysqli->prepare("SELECT ID, seal_ID, ship_name, class FROM ships WHERE seal_ID =? AND del_flag <> 1");
+    $stmt = $mysqli->prepare("SELECT ID, seal_ID, ship_name, class, link FROM ships WHERE seal_ID =? AND del_flag <> 1");
     $stmt->bind_param("i", $user->data()->id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -120,6 +120,7 @@ if (isset($_GET['edit'])) {
           <tr>
               <td>Registry Number</td>
               <td>Ship Name Name</td>
+              <td>Ship Link</td>
               <td>Class</td>
               <td colspan="2">Options</td>
           </tr>';
@@ -127,9 +128,11 @@ if (isset($_GET['edit'])) {
             $field1name = $row["ID"];
             $field2name = $row["ship_name"];
             $field3name = $row["class"];
+            $field4name = $row["link"];
             echo '<tr>
                       <td>HS'.$field1name.'</td>
                       <td>'.$field2name.'</td>
+                      <td>'.$field4name.'</td>
                       <td>';
                       mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
                       $stmt3 = $mysqli->prepare("SELECT ship_name FROM lookups.ships_lu WHERE ship_id = ?");
@@ -236,6 +239,12 @@ echo '<div class="modal fade" id="moE'.$field1name.'" tabindex="-1" aria-hidden=
                                                 ?>
                                             </select>
 </div>
+                  <div class="input-group mb-3">
+                    <input type="url" name="link" id="link" class="form-control"
+                    placeholder="Coriolis Shortlink (Optional) https://s.orbis.zone/"
+                    pattern="(https?:\/\/(.+?\.)?orbis\.zone(\/[A-Za-z0-9\-\._~:\/\?#\[\]@!$&'\(\)\*\+,;\=]*)?)" size="30"
+                    required>
+                  </div>
 									<div class="modal-footer">
 										<button class="btn btn-primary" type="submit">Submit</button><button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
 									</div>
@@ -252,4 +261,3 @@ echo '<div class="modal fade" id="moE'.$field1name.'" tabindex="-1" aria-hidden=
 <?php include '../../assets/includes/footer.php'; ?>
 </body>
 </html>
-
