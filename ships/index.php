@@ -140,7 +140,7 @@ if (isset($_GET['edit'])) {
                       $stmt3->close();
                       echo $result3['ship_name'];
                       echo '</td>
-                      <td><button type="button" class="btn btn-warning active" data-toggle="modal" data-target="#moE'.$field1name.'">Edit</button>
+                      <td><a href="edit-ship.php?cne='.$field2name.'" class="btn btn-warning active">Edit</a></td>
                       <td><button type="button" class="btn btn-danger active" data-toggle="modal" data-target="#mo'.$field1name.'">Delete</button>
                       </td>
                   </tr>';
@@ -166,38 +166,44 @@ if (isset($_GET['edit'])) {
   </div>
 </div>';
 echo '<div class="modal fade" id="moE'.$field1name.'" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="ModalLabelEdit" style="color:black;">Edit Ship?</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <form action="?edit" method="post">
-      <div class="modal-body" style="color:black;">
-        Please edit your ship information:
-			<span class="input-group-text">Edited Name:</span>
-		<input type="text" name="edt_alias" value="'.$field2name.'" class="form-control" placeholder="Edited Alias Name" aria-label="Edited Alias Name" required><br>
-			<span class="input-group-text">Ship Class:</span>
-		<select name="ship" class="custom-select" id="inputGroupSelect01" placeholder="Test" required>
-			<option selected disabled>Choose...</option>';
-			foreach ($shipList as $shipId => $shipName) {
-        if (!is_array($shipclass['ship'] ?? false)) continue;
-        else {
-          echo '<option value="' . $shipId . '"' . ($shipclass['ship'] == $shipId ? ' checked' : '') . '>' . $shipName . '</option>';
-        }
-			}
-		echo '</select>
-      </div>
-      <div class="modal-footer">
-            <input type="hidden" name="numberedt" value="'.$field1name.'" required>
-          <button type="submit" class="btn btn-danger">Submit</button><button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          </form>
-      </div>
-    </div>
-  </div>
-</div>';
+				  <div class="modal-dialog modal-dialog-centered">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <h5 class="modal-title" id="exampleModalLabel" style="color:black;">Edit Ship<h5>
+				        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				          <span aria-hidden="true">&times;</span>
+				        </button>
+				      </div>
+				      <div class="modal-body" style="color:black;">
+				      <form action="?edit" method="post">
+				        <div class="input-group mb-3">
+				                  <div class="input-group-prepend">
+				                      <span class="input-group-text">Edited Name:</span>
+				                  </div>
+				                  <input type="text" name="edt_alias" value="';
+				                   echo $field2name;
+				                   echo '" class="form-control" placeholder="Edited Ship Name" aria-label="Edited Ship Name" required>
+				      </div>
+              <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">Ship Class:</span>
+                                        </div>
+                                        <select name="ship" class="custom-select" id="inputGroupSelect01" placeholder="Test" required>
+                                          <option selected disabled>Choose...</option>';
+                                            foreach ($shipList as $shipId => $shipName) {
+                                                echo '<option value="' . $shipId . '"' . ($burgerking['ship'] == $shipId ? ' checked' : '') . '>' . $shipName . '</option>';
+                                            }
+                                        echo '</select>
+</div>
+				      <div class="modal-footer">
+				            <input type="hidden" name="numberedt" value="'.$field3name.'" required>
+				          <button type="submit" class="btn btn-primary">Submit</button><button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				          </form>
+				      </div>
+				    </div>
+				  </div>
+				</div>';
+
               $counter++;
         }
         echo '</table>';
@@ -224,12 +230,9 @@ echo '<div class="modal fade" id="moE'.$field1name.'" tabindex="-1" aria-hidden=
                                             <select name="ship" class="custom-select" id="inputGroupSelect01" placeholder="Test" required>
                                               <option selected disabled>Choose...</option>
                                                 <?php
-			foreach ($shipList as $shipId => $shipName) {
-        if (!is_array($shipclass['ship'] ?? false)) continue;
-        else {
-          echo '<option value="' . $shipId . '"' . ($shipclass['ship'] == $shipId ? ' checked' : '') . '>' . $shipName . '</option>';
-        }
-			}
+                                                foreach ($shipList as $shipId => $shipName) {
+                                                    echo '<option value="' . $shipId . '"' . ($shipclass['ship'] == $shipId ? ' checked' : '') . '>' . $shipName . '</option>';
+                                                }
                                                 ?>
                                             </select>
 </div>
@@ -249,3 +252,4 @@ echo '<div class="modal fade" id="moE'.$field1name.'" tabindex="-1" aria-hidden=
 <?php include '../../assets/includes/footer.php'; ?>
 </body>
 </html>
+

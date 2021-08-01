@@ -75,10 +75,10 @@ while ($shipclass = $res->fetch_assoc()) {
                         $stmt2->close();
                         if (!isset($result2)) {
                           echo 'CMDR Not Set</td></tr>';
-                        }
-                        else {
+			}
+			else {
                           echo $result2['seal_name'];'</td></tr>';
-                        }
+			}
         }
         echo '</table>';
         $result->free();
