@@ -242,8 +242,7 @@ echo '<div class="modal fade" id="moE'.$field1name.'" tabindex="-1" aria-hidden=
                   <div class="input-group mb-3">
                     <input type="url" name="link" id="link" class="form-control"
                     placeholder="Coriolis Shortlink (Optional) https://s.orbis.zone/"
-                    pattern="(https?:\/\/(.+?\.)?orbis\.zone(\/[A-Za-z0-9\-\._~:\/\?#\[\]@!$&'\(\)\*\+,;\=]*)?)" size="30"
-                    required>
+                    pattern="(https?:\/\/(.+?\.)?orbis\.zone(\/[A-Za-z0-9\-\._~:\/\?#\[\]@!$&'\(\)\*\+,;\=]*)?)" size="30">
                   </div>
 									<div class="modal-footer">
 										<button class="btn btn-primary" type="submit">Submit</button><button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>

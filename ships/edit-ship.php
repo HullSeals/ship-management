@@ -105,8 +105,7 @@ if (isset($_GET['send'])) {
 <div class="input-group mb-3">
   <input type="url" name="link" id="link" class="form-control" value="<?php echo $blizzard; ?>"
   placeholder="Coriolis Shortlink (Optional) https://s.orbis.zone/"
-  pattern="(https?:\/\/(.+?\.)?orbis\.zone(\/[A-Za-z0-9\-\._~:\/\?#\[\]@!$&'\(\)\*\+,;\=]*)?)" size="30"
-  required>
+  pattern="(https?:\/\/(.+?\.)?orbis\.zone(\/[A-Za-z0-9\-\._~:\/\?#\[\]@!$&'\(\)\*\+,;\=]*)?)" size="30">
 </div>
 
                   <button type="submit" class="btn btn-primary">Submit</button> <a href="." class="btn btn-warning">Go Back</a>
