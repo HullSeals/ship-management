@@ -44,7 +44,7 @@ if (isset($_GET['send'])) {
         $validationErrors[] = 'invalid ship';
     }
     if (!count($validationErrors)) {
-      $stmt = $mysqli->prepare('CALL spEditShipCleaner(?,?,?,?,?)');
+      $stmt = $mysqli->prepare('CALL spEditShip(?,?,?,?,?)');
       $stmt->bind_param('sisis', $lore['edt_alias'], $lore['ship'], $lore['link'], $lore['numberedt'], $lgd_ip);
       $stmt->execute();
       foreach ($stmt->error_list as $error) {

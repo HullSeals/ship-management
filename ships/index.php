@@ -48,7 +48,7 @@ if (isset($_GET['new'])) {
         $validationErrors[] = 'invalid ship';
     }
     if (!count($validationErrors)) {
-      $stmt = $mysqli->prepare('CALL spCreateShipCleaner(?,?,?,?,?)');
+      $stmt = $mysqli->prepare('CALL spCreateShip(?,?,?,?,?)');
       $stmt->bind_param('sisis', $lore['new_ship'], $lore['ship'], $lore['link'], $user->data()->id, $lgd_ip);
       $stmt->execute();
       foreach ($stmt->error_list as $error) {
@@ -56,24 +56,6 @@ if (isset($_GET['new'])) {
       }
       $stmt->close();
   header("Location: .");
-    }
-}
-if (isset($_GET['edit'])) {
-    foreach ($_REQUEST as $key => $value) {
-        $lore[$key] = strip_tags(stripslashes(str_replace(["'", '"'], '', $value)));
-    }
-    if (!isset($shipList[$lore['ship']])) {
-        $validationErrors[] = 'invalid ship';
-    }
-    if (!count($validationErrors)) {
-      $stmt = $mysqli->prepare('CALL spEditShipCleaner(?,?,?,?)');
-      $stmt->bind_param('siis', $lore['edt_alias'], $lore['ship'], $lore['numberedt'], $lgd_ip);
-      $stmt->execute();
-      foreach ($stmt->error_list as $error) {
-          $validationErrors[] = 'DB: ' . $error['error'];
-      }
-      $stmt->close();
-      header("Location: .");
     }
 }
 
