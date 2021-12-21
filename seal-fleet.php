@@ -24,6 +24,15 @@ while ($shipclass = $res->fetch_assoc()) {
 <title>The Seal Fleets | The Hull Seals</title>
 <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
 <?php include '../assets/includes/headerCenter.php'; ?>
+<link rel="stylesheet" type="text/css" href="../assets/css/datatables.min.css"/>
+<script type="text/javascript" src="../assets/javascript/datatables.min.js"></script>
+<link rel="stylesheet" type="text/css" href="cssTableOverride.css" /><!--I don't know why this fixes the table, but hey, it does. ~ Rix-->
+<script>
+$(document).ready(function() {
+$('#ShipList').DataTable({
+  "order": [[ 0, 'desc' ]]
+});
+} );</script>
 </head>
 <body>
     <div id="home">
@@ -41,7 +50,7 @@ while ($shipclass = $res->fetch_assoc()) {
     $result = $stmt->get_result();
     echo "<h3>Returning all Registered Ships: ";
     echo nl2br ("</h3>");
-    echo '<table class="table table-dark table-striped table-bordered table-hover table-responsive-md">
+    echo '<table class="table table-dark table-striped table-bordered table-hover table-responsive-md" id="ShipList">
           <thead>
           <tr>
               <td>Registry Number</td>
@@ -90,7 +99,7 @@ while ($shipclass = $res->fetch_assoc()) {
     ?>
     <p><small><sub>* HS00-HS19 are reserved for future use.</sub></small></p>
     <br />
-    <a href="." class="btn btn-success btn-lg active" >Manage Your Ships</a>
+    <a href="." class="btn btn-success btn-lg active">Manage Your Ships</a>
   </article>
   <div class="clearfix"></div>
 </section>

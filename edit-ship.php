@@ -4,15 +4,15 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 //UserSpice Required
-require_once '../../users/init.php';  //make sure this path is correct!
+require_once '../users/init.php';  //make sure this path is correct!
 if (!securePage($_SERVER['PHP_SELF'])){die();}
 
 //IP Tracking Stuff
-require '../../assets/includes/ipinfo.php';
+require '../assets/includes/ipinfo.php';
 
 //
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-$db = include '../db.php';
+$db = include 'db.php';
 $mysqli = new mysqli($db['server'], $db['user'], $db['pass'], $db['db'], $db['port']);
 $stmt = $mysqli->prepare("SELECT * FROM ships WHERE seal_ID = ? AND ship_name = ? AND del_flag <> 1");
     $stmt->bind_param("is", $user->data()->id, $_GET['cne']);
@@ -62,12 +62,12 @@ if (isset($_GET['send'])) {
 <head>
 <meta content="Hull Seals Ship Registration Portal" name="description">
 <title>Edit Alias | The Hull Seals</title>
-<?php include '../../assets/includes/headerCenter.php'; ?>
+<?php include '../assets/includes/headerCenter.php'; ?>
 
 </head>
 <body>
 <div id="home">
-  <?php include '../../assets/includes/menuCode.php';?>
+  <?php include '../assets/includes/menuCode.php';?>
     <section class="introduction container">
   <article id="intro3">
       <h1>Edit Ship</h1>
@@ -114,6 +114,6 @@ if (isset($_GET['send'])) {
                 <div class="clearfix"></div>
             </section>
           </div>
-          <?php include '../../assets/includes/footer.php'; ?>
+          <?php include '../assets/includes/footer.php'; ?>
       </body>
       </html>
