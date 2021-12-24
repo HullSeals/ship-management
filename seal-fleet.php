@@ -3,12 +3,31 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+//Declare Title, Content, Author
+$pgAuthor = "";
+$pgContent = "";
+$useIP = 0; //1 if Yes, 0 if No.
+$activePage = ''; //Used only for Menu Bar Sites
+
+//If you have any custom scripts, CSS, etc, you MUST declare them here.
+//They will be inserted at the bottom of the <head> section.
+$customContent = '<link rel="stylesheet" type="text/css" href="/usersc/templates/seals/assets/css/datatables.min.css"/>
+<script type="text/javascript" src="/usersc/templates/seals/assets/javascript/datatables.min.js"></script>
+<link rel="stylesheet" type="text/css" href="cssTableOverride.css" /><!--I don\'t know why this fixes the table, but hey, it does. ~ Rix-->
+<script>
+$(document).ready(function() {
+$(\'#ShipList\').DataTable({
+  "order": [[ 0, \'desc\' ]]
+});
+} );</script>';
+
 //UserSpice Required
 require_once '../users/init.php';  //make sure this path is correct!
+require_once $abs_us_root.$us_url_root.'users/includes/template/prep.php';
 if (!securePage($_SERVER['PHP_SELF'])){die();}
 
-//
 $db = include 'db.php';
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 $mysqli = new mysqli($db['server'], $db['user'], $db['pass'], $db['db'], $db['port']);
 $shipList = [];
 $res = $mysqli->query('SELECT * FROM lookups.ships_lu ORDER BY ship_id');
@@ -16,35 +35,9 @@ while ($shipclass = $res->fetch_assoc()) {
     $shipList[$shipclass['ship_id']] = $shipclass['ship_name'];
 }
 ?>
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-<meta content="The Seal Fleets" name="description">
-<title>The Seal Fleets | The Hull Seals</title>
-<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-<?php include '../assets/includes/headerCenter.php'; ?>
-<link rel="stylesheet" type="text/css" href="../assets/css/datatables.min.css"/>
-<script type="text/javascript" src="../assets/javascript/datatables.min.js"></script>
-<link rel="stylesheet" type="text/css" href="cssTableOverride.css" /><!--I don't know why this fixes the table, but hey, it does. ~ Rix-->
-<script>
-$(document).ready(function() {
-$('#ShipList').DataTable({
-  "order": [[ 0, 'desc' ]]
-});
-} );</script>
-</head>
-<body>
-    <div id="home">
-      <?php include '../assets/includes/menuCode.php';?>
-        <section class="introduction container">
-	    <article id="intro3">
     <h1>Our Fleet</h1>
     <p>Here you can view all registered repair ships within the Seal fleet. This is not a complete list, however, and registration is optional.</p>
     <?php
-    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-    $db = include 'db.php';
-    $mysqli = new mysqli($db['server'], $db['user'], $db['pass'], $db['db'], $db['port']);
     $stmt = $mysqli->prepare("SELECT ID, seal_ID, ship_name, class, link FROM ships WHERE del_flag <> 1");
     $stmt->execute();
     $result = $stmt->get_result();
@@ -70,7 +63,6 @@ $('#ShipList').DataTable({
                       <td>HS'.$field1name.'</td>
                       <td>'.$field2name.'</td>
                       <td>';
-                      mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
                       $stmt3 = $mysqli->prepare("SELECT ship_name FROM lookups.ships_lu WHERE ship_id = ?");
                       $stmt3->bind_param("i", $field3name);
                       $stmt3->execute();
@@ -100,10 +92,4 @@ $('#ShipList').DataTable({
     <p><small><sub>* HS00-HS19 are reserved for future use.</sub></small></p>
     <br />
     <a href="." class="btn btn-success btn-lg active">Manage Your Ships</a>
-  </article>
-  <div class="clearfix"></div>
-</section>
-</div>
-<?php include '../assets/includes/footer.php'; ?>
-</body>
-</html>
+    <?php require_once $abs_us_root . $us_url_root . 'users/includes/html_footer.php'; ?>

@@ -3,14 +3,21 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+//Declare Title, Content, Author
+$pgAuthor = "";
+$pgContent = "";
+$useIP = 1; //1 if Yes, 0 if No.
+$activePage = ''; //Used only for Menu Bar Sites
+
+//If you have any custom scripts, CSS, etc, you MUST declare them here.
+//They will be inserted at the bottom of the <head> section.
+$customContent = '<!-- Your Content Here -->';
+
 //UserSpice Required
 require_once '../users/init.php';  //make sure this path is correct!
+require_once $abs_us_root.$us_url_root.'users/includes/template/prep.php';
 if (!securePage($_SERVER['PHP_SELF'])){die();}
 
-//IP Tracking Stuff
-require '../assets/includes/ipinfo.php';
-
-//
 $counter = 0;
 if (isset($_SESSION['2ndrun'])) {
   unset($_SESSION['2ndrun']);
@@ -58,22 +65,26 @@ if (isset($_GET['new'])) {
   header("Location: .");
     }
 }
+if (isset($_GET['edit'])) {
+    foreach ($_REQUEST as $key => $value) {
+        $lore[$key] = strip_tags(stripslashes(str_replace(["'", '"'], '', $value)));
+    }
+    if (!isset($shipList[$lore['ship']])) {
+        $validationErrors[] = 'invalid ship';
+    }
+    if (!count($validationErrors)) {
+      $stmt = $mysqli->prepare('CALL spEditShip(?,?,?,?,?)');
+      $stmt->bind_param('sisis', $lore['edt_alias'], $lore['ship'], $lore['link'], $lore['numberedt'], $lgd_ip);
+      $stmt->execute();
+      foreach ($stmt->error_list as $error) {
+          $validationErrors[] = 'DB: ' . $error['error'];
+      }
+      $stmt->close();
+      header("Location: .");
+    }
+}
 
 ?>
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-<meta content="Hull Seals Ship Registration Portal" name="description">
-<title>My Fleet | The Hull Seals</title>
-<?php include '../assets/includes/headerCenter.php'; ?>
-
-</head>
-<body>
-<div id="home">
-  <?php include '../assets/includes/menuCode.php';?>
-    <section class="introduction container">
-  <article id="intro3">
     <h1>My Ships</h1>
     <p>Here you can view your registered Seal Ships as well as register a new one. Registration is completely optional, but you can lay claim to your own unique Seal Fleet Registry Number</p>
     <p>
@@ -125,7 +136,11 @@ if (isset($_GET['new'])) {
                       $stmt3->close();
                       echo $result3['ship_name'];
                       echo '</td>
-                      <td><a href="edit-ship.php?cne='.$field2name.'" class="btn btn-warning active">Edit</a></td>
+                      <td><button type="button" class="btn btn-warning active" data-toggle="modal" data-target="#me'.$field1name.'">Edit</button>
+
+
+
+
                       <td><button type="button" class="btn btn-danger active" data-toggle="modal" data-target="#mo'.$field1name.'">Delete</button>
                       </td>
                   </tr>';
@@ -150,45 +165,65 @@ if (isset($_GET['new'])) {
     </div>
   </div>
 </div>';
-echo '<div class="modal fade" id="moE'.$field1name.'" tabindex="-1" aria-hidden="true">
-				  <div class="modal-dialog modal-dialog-centered">
-				    <div class="modal-content">
-				      <div class="modal-header">
-				        <h5 class="modal-title" id="exampleModalLabel" style="color:black;">Edit Ship<h5>
-				        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-				          <span aria-hidden="true">&times;</span>
-				        </button>
-				      </div>
-				      <div class="modal-body" style="color:black;">
-				      <form action="?edit" method="post">
-				        <div class="input-group mb-3">
-				                  <div class="input-group-prepend">
-				                      <span class="input-group-text">Edited Name:</span>
-				                  </div>
-				                  <input type="text" name="edt_alias" value="';
-				                   echo $field2name;
-				                   echo '" class="form-control" placeholder="Edited Ship Name" aria-label="Edited Ship Name" required>
-				      </div>
-              <div class="input-group mb-3">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text">Ship Class:</span>
-                                        </div>
-                                        <select name="ship" class="custom-select" id="inputGroupSelect01" placeholder="Test" required>
-                                          <option selected disabled>Choose...</option>';
-                                            foreach ($shipList as $shipId => $shipName) {
-                                                echo '<option value="' . $shipId . '"' . ($burgerking['ship'] == $shipId ? ' checked' : '') . '>' . $shipName . '</option>';
-                                            }
-                                        echo '</select>
-</div>
-				      <div class="modal-footer">
-				            <input type="hidden" name="numberedt" value="'.$field3name.'" required>
-				          <button type="submit" class="btn btn-primary">Submit</button><button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-				          </form>
-				      </div>
-				    </div>
-				  </div>
-				</div>';
+$stmtship = $mysqli->prepare("SELECT * FROM ships WHERE seal_ID = ? AND ID = ? AND del_flag <> 1");
+    $stmtship->bind_param("is", $user->data()->id, $field1name);
+    $stmtship->execute();
+    $resultship = $stmtship->get_result();
+$resultsArray = $resultship->fetch_assoc();
+$shipName = $resultsArray['ship_name'];
+$shipLink = $resultsArray['link'];
+$shipID1 = $resultsArray['ID'];
+$stmtship->close();
 
+echo '<div class="modal fade" id="me'.$field1name.'" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel" style="color:black;">Edit Ship?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" style="color:black;">
+		Please edit your ship information.
+		</div>
+      <div class="modal-footer">
+<form action="?edit" method="post">
+        <div class="input-group mb-3">
+                  <div class="input-group-prepend">
+                      <span class="input-group-text">Edited Name:</span>
+                  </div>
+                  <input type="text" name="edt_alias" value="'. $shipName .'" class="form-control" placeholder="Edited Alias Name" aria-label="Edited Alias Name" required>
+                  <input type="hidden" name="numberedt" value="'. $shipID1 .'" required>
+                  </div>
+                  <div class="input-group mb-3">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">Ship Class:</span>
+                                            </div>
+                                            <select name="ship" class="custom-select" id="inputGroupSelect01" placeholder="Test" required>';
+                                                foreach ($shipList as $shipId => $shipName) {
+                                                  if ($shipId == $resultsArray['class']) {
+                                                    $selected = "selected";
+                                                  }
+                                                  else {
+                                                    $selected = "";
+                                                  }
+                                                    echo '<option value="' . $shipId . '"' . $selected . '>' . $shipName . '</option>';
+                                                }
+                                            echo '</select>
+</div>
+<div class="input-group mb-3">
+  <input type="url" name="link" id="link" class="form-control" value="'. $shipLink . '"
+  placeholder="Coriolis Shortlink (Optional) https://s.orbis.zone/"
+  pattern="(https?:\/\/(.+?\.)?orbis\.zone(\/[A-Za-z0-9\-\._~:\/\?#\[\]@!$&\'\(\)\*\+,;\=]*)?)" size="30">
+</div>
+
+                  <button type="submit" class="btn btn-primary">Submit</button><button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  </form>
+      </div>
+    </div>
+  </div>
+</div>';
               $counter++;
         }
         echo '</table>';
@@ -235,10 +270,4 @@ echo '<div class="modal fade" id="moE'.$field1name.'" tabindex="-1" aria-hidden=
 					</div>
 				</div>
 
-  </article>
-  <div class="clearfix"></div>
-</section>
-</div>
-<?php include '../assets/includes/footer.php'; ?>
-</body>
-</html>
+        <?php require_once $abs_us_root . $us_url_root . 'users/includes/html_footer.php'; ?>
