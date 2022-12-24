@@ -44,56 +44,57 @@ while ($shipclass = $res->fetch_assoc()) {
 <?php
 $stmt = $mysqli->prepare("SELECT ID, seal_ID, ship_name, class, link FROM ships WHERE del_flag <> 1");
 $stmt->execute();
-$result = $stmt->get_result();
-echo "<h3>Returning all Registered Ships: ";
-echo nl2br("</h3>");
-echo '<table class="table table-dark table-striped table-bordered table-hover table-responsive-md" id="ShipList">
-          <thead>
-          <tr>
-              <td>Registry Number</td>
-              <td>Ship Name Name</td>
-              <td>Class</td>
-             <td>Owner</td>
-             <td>Build Link</td>
-          </tr>
-          </thead>';
-while ($row = $result->fetch_assoc()) {
-  $field1name = $row["ID"];
-  $field2name = $row["ship_name"];
-  $field3name = $row["class"];
-  $field4name = $row["seal_ID"];
-  $field5name = $row["link"];
-  echo '<tr>
+$result = $stmt->get_result(); ?>
+<h3>Returning all Registered Ships: "
+  <?= nl2br("</h3>"); ?>
+  <table class="table table-dark table-striped table-bordered table-hover table-responsive-md" id="ShipList">
+    <thead>
+      <tr>
+        <td>Registry Number</td>
+        <td>Ship Name Name</td>
+        <td>Class</td>
+        <td>Owner</td>
+        <td>Build Link</td>
+      </tr>
+    </thead>
+    <?
+    while ($row = $result->fetch_assoc()) {
+      $field1name = $row["ID"];
+      $field2name = $row["ship_name"];
+      $field3name = $row["class"];
+      $field4name = $row["seal_ID"];
+      $field5name = $row["link"];
+      echo '<tr>
           <td>HS' . $field1name . '</td>
           <td>' . $field2name . '</td>
           <td>';
-  $stmt3 = $mysqli->prepare("SELECT ship_name FROM lookups.ships_lu WHERE ship_id = ?");
-  $stmt3->bind_param("i", $field3name);
-  $stmt3->execute();
-  $result3 = $stmt3->get_result();
-  $result3 = mysqli_fetch_assoc($result3);
-  $stmt3->close();
-  echo $result3['ship_name'];
-  echo '</td> <td>';
-  mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-  $stmt2 = $mysqli->prepare("SELECT seal_name FROM sealsudb.staff WHERE seal_ID = ? LIMIT 1");
-  $stmt2->bind_param("i", $field4name);
-  $stmt2->execute();
-  $result2 = $stmt2->get_result();
-  $result2 = mysqli_fetch_assoc($result2);
-  $stmt2->close();
-  if (!isset($result2)) {
-    echo 'CMDR Not Set</td>';
-  } else {
-    echo $result2['seal_name'];
-    '</td>';
-  }
-  echo '<td>' . $field5name . '</td></tr>';
-}
-echo '</table>';
-$result->free();
-?>
-<p><small><sub>* HS00-HS19 are reserved for future use.</sub></small></p>
-<br />
-<a href="." class="btn btn-success btn-lg active">Manage Your Ships</a>
-<?php require_once $abs_us_root . $us_url_root . 'users/includes/html_footer.php'; ?>
+      $stmt3 = $mysqli->prepare("SELECT ship_name FROM lookups.ships_lu WHERE ship_id = ?");
+      $stmt3->bind_param("i", $field3name);
+      $stmt3->execute();
+      $result3 = $stmt3->get_result();
+      $result3 = mysqli_fetch_assoc($result3);
+      $stmt3->close();
+      echo $result3['ship_name'];
+      echo '</td> <td>';
+      mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+      $stmt2 = $mysqli->prepare("SELECT seal_name FROM sealsudb.staff WHERE seal_ID = ? LIMIT 1");
+      $stmt2->bind_param("i", $field4name);
+      $stmt2->execute();
+      $result2 = $stmt2->get_result();
+      $result2 = mysqli_fetch_assoc($result2);
+      $stmt2->close();
+      if (!isset($result2)) {
+        echo 'CMDR Not Set</td>';
+      } else {
+        echo $result2['seal_name'];
+        '</td>';
+      }
+      echo '<td>' . $field5name . '</td></tr>';
+    }
+    echo '</table>';
+    $result->free();
+    ?>
+    <p><small><sub>* HS00-HS19 are reserved for future use.</sub></small></p>
+    <br />
+    <a href="." class="btn btn-success btn-lg active">Manage Your Ships</a>
+    <?php require_once $abs_us_root . $us_url_root . 'users/includes/html_footer.php'; ?>
